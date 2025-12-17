@@ -19,5 +19,5 @@ dbConnect(DB_URL);
 app.use("/user", userRouter);
 
 app.listen(PORT, () => {
-    console.log("Server running")
+    console.log(`Server running at http://localhost:${PORT}`)
 })

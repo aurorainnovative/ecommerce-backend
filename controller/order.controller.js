@@ -8,7 +8,7 @@ export const createOrder = async (req, res) => {
         const order = new Order(data);
         await order.save();
 
-        res.status(201).json({success: true, message: "Your order placed!", order})
+        res.status(201).json({success: true, message: "Your order placed!", order});
     } catch (error) {
         console.log("Order creation error : ", error);
         res.status(500).json({success: false, message: "Internal Server Error. Please try again!"})

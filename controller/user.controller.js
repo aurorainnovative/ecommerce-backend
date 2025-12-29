@@ -2,14 +2,14 @@ import User from "../model/user.model.js";
 
 export const createUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
         if (!name || !email || !password) return res.status(400).json({ success: false, message: "All input fields are required!" });
 
         const isExist = await User.findOne({ email });
         if (isExist) return res.status(400).json({ success: false, message: "This email already used in another account!" });
 
         const newUser = new User({
-            name, email, password
+            name, email, password, role
         });
 
         await newUser.save();

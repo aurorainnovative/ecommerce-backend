@@ -1,40 +1,120 @@
+import Order from "../model/order.model.js";
 import User from "../model/user.model.js";
 
 export const createUser = async (req, res) => {
-    try {
-        const { name, email, password, role } = req.body;
-        if (!name || !email || !password) return res.status(400).json({ success: false, message: "All input fields are required!" });
+  try {
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password)
+      return res
+        .status(400)
+        .json({ success: false, message: "All input fields are required!" });
 
-        const isExist = await User.findOne({ email });
-        if (isExist) return res.status(400).json({ success: false, message: "This email already used in another account!" });
-
-        const newUser = new User({
-            name, email, password, role
+    const isExist = await User.findOne({ email });
+    if (isExist)
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "This email already used in another account!",
         });
 
-        await newUser.save();
+    const newUser = new User({
+      name,
+      email,
+      password,
+      role,
+    });
 
-        res.status(201).json({ success: true, message: "User created successfully!", user: newUser })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ success: false, message: "Something went wrong while creating user!" })
-    }
-}
+    await newUser.save();
+
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "User created successfully!",
+        user: newUser,
+      });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Something went wrong while creating user!",
+      });
+  }
+};
 
 export const loginUser = async (req, res) => {
-    try {
-        const {email, password} = req.body;
-        if(!email || !password) return  res.status(400).json({ success: false, message: "Email and password are required!" });
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and password are required!" });
 
-        const user = await User.findOne({email});
-        if(!user) return  res.status(404).json({ success: false, message: "User not found!" });
+    const user = await User.findOne({ email });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found!" });
 
-        const matchPassword = await user.comparePassword(password);
-        if(!matchPassword) return  res.status(400).json({ success: false, message: "Incorrect password!" });
+    const matchPassword = await user.comparePassword(password);
+    if (!matchPassword)
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect password!" });
 
-        return  res.status(200).json({ success: true, message: "User login successfully!", user });
+    return res
+      .status(200)
+      .json({ success: true, message: "User login successfully!", user });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Something went wrong while login user!",
+      });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res
+      .status(200)
+      .json({ success: true, message: "Users Fetched!", data: users });
+  } catch (error) {
+    console.log("Users Getting Error : ", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal Server Error.Please try again!",
+      });
+  }
+};
+
+export const adminDashboard = async (req, res) => {
+     try {
+        const orders = await Order.find();
+        const users = await User.find();
+
+        const data = {
+            totalOrders: orders.length,
+            totalUsers: users.length
+        }
+
+        res.status(200).json({success: true, message: "Dashboard Fetched!", data});
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ success: false, message: "Something went wrong while login user!" })
+        console.log("Dashboard Getting Error : ", error);
+        res.status(500).json({success: false, message: "Internal Server Error.Please try again!"});
     }
 }
+
+// req - req listening
+// proccessing 
+// res send to user
+
+
